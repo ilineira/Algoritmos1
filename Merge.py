@@ -9,17 +9,17 @@ def agregar_a(nuevo, palabra):
     print(palabra)
     nuevo.write(palabra + '\n')
 
-def merge(txt1, txt2, txt3, nuevo, max):
+def merge(txt1, txt2, txt3, nuevo, m):
     palabra1 = leer(txt1)
     palabra2 = leer(txt2)
     palabra3 = leer(txt3)
     l = [palabra1, palabra2, palabra3]
     lista = []
-    while (palabra1 != max) or (palabra2 != max) or (palabra3 != max):
+    while (palabra1 != m) or (palabra2 != m) or (palabra3 != m):
         l.sort()
         print(l)
 
-        if l[0] == max:
+        if l[0] == m:
             break
 
         elif l[0] == l[1] == l[2]:
@@ -66,12 +66,12 @@ def merge(txt1, txt2, txt3, nuevo, max):
                 palabra3 = leer(txt3)
             l = [palabra1, palabra2, palabra3]
 
-max = 'zzz'
+m = 'zzz'
 t1 = open('archivo1.txt', 'r')
 t2 = open('archivo2.txt', 'r')
 t3 = open('archivo3.txt', 'r')
 n = open('palabras.txt', 'w')
-merge(t1, t2, t3, n)
+merge(t1, t2, t3, n, m)
 t1.close()
 t2.close()
 t3.close()
