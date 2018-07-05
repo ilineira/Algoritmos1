@@ -29,11 +29,11 @@ def imprimir_notas_alumnos(alumnos, notas):
     alumno = leer_datos(alumnos_csv)
     nota = leer_datos(notas_csv)
     while (alumno):
-        print alumno[2]+", "+alumno[1]+" - "+alumno[0]
+        print (alumno[2]+", "+alumno[1]+" - "+alumno[0])
         if (not nota or nota[0] != alumno[0]):
-            print "\tNo se registran notas"
+            print ("\tNo se registran notas")
         while (nota and nota[0] == alumno[0]):
-            print "\t"+nota[1]+": "+nota[2]
+            print ("\t"+nota[1]+": "+nota[2])
             nota = leer_datos(notas_csv)
         alumno = leer_datos(alumnos_csv)
 
