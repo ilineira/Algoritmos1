@@ -2,7 +2,7 @@ def leer(archivo, defalut):
     linea = archivo.readline()
     return linea if linea else defalut
 
-max = '999999999999'
+maximo = '999999999999'
 archivo1 = open('archivo1.txt', 'rt')
 archivo2 = open('archivo2.txt', 'rt')
 linea1 = leer(archivo1, "max, '0'")
@@ -10,7 +10,7 @@ linea2 = leer(archivo2, "max, '0'")
 cta1, importe1 = linea1.strip().split(',')
 cta2, importe2 = linea2.strip().split(',')
 total_gral = 0
-while (cta1 != max) or (cta2 != max):
+while (cta1 != maximo) or (cta2 != maximo):
     menor = min(cta1, cta2)
     total = 0
     while cta1 == menor:
