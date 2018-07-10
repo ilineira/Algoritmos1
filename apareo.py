@@ -70,8 +70,8 @@ def aparearArchivos(arMaestro, arNovedades, arMaeActualizado, arLogErrores):
             legajo_nov, nombre_nov, sueldo_nov, tipo = leerMaeNov(arNovedades,",,,")
 
 #########################################################################
-arMaestro = open("maestro.csv","r")
-arNovedades = open("novedades.csv","r")
+arMaestro = open("maestro.csv", "r")
+arNovedades = open("novedades.csv", "r")
 arMaeActualizado = open('maestro_actual.csv','w')
 arLogErrores = open('logErrores.txt','w')
 
