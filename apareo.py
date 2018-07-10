@@ -1,44 +1,83 @@
-# notas.py: Recorre un archivo de alumnos y otro de notas e imprime
-#           las notas que corresponden a cada alumno
+"""Apareo de Archivos"""
+#Genera un maestro actualizado, en base al archivo maestro original y las
+# novedades que vienen informadas en el archivo de novedades.
+# Se controla que el tipo de operación a realizar Alta, Baja o Modificacion
+# sea consistente con la logica de comparacion de claves
 
-#!/usr/bin/env python
-# encoding: latin1
-import csv
+# La funcion leerMaeNov utiliza el parametro "devolver", para en caso del
+# archivo Maestro devolver 3 vacios, y en el caso del archivo Novedades,
+# devolver 4 vacios
 
-def leer_datos(datos):
-    """ Obtiene el siguiente registro, o devuelve None si llegó al fin
-        del archivo. """
-    try:
-        return datos.next()
-    except:
-        return None
+def leerMaeNov(archivo,devolver):
+    linea = archivo.readline()
+    linea = linea.rstrip('\n')
+    if linea:
+        return linea.split(',')
+    else:
+        return devolver.split(",")
 
-def imprimir_notas_alumnos(alumnos, notas):
-    """ Abre los archivos de alumnos y notas, y por cada alumno imprime
-        todas las notas que le corresponden."""
-    notas_a = open(notas)
-    alumnos_a = open(alumnos)
-    notas_csv = csv.reader(notas_a)
-    alumnos_csv = csv.reader(alumnos_a)
+def grabar_MaeActualizado(archivo, legajo, nomApe, sueldo):
+    archivo.write(legajo + ',' + nomApe + ',' + sueldo + '\n')
 
-    # Saltea los encabezados
-    leer_datos(notas_csv)
-    leer_datos(alumnos_csv)
+def grabar_error(archivo, legajo, nomApe, sueldo, tipo):
+    archivo.write(legajo + ',' + nomApe + ',' + sueldo + ',' + tipo + '\n')
 
-    # Empieza a leer
-    alumno = leer_datos(alumnos_csv)
-    nota = leer_datos(notas_csv)
-    while (alumno):
-        print (alumno[2]+", "+alumno[1]+" - "+alumno[0])
-        if (not nota or nota[0] != alumno[0]):
-            print ("\tNo se registran notas")
-        while (nota and nota[0] == alumno[0]):
-            print ("\t"+nota[1]+": "+nota[2])
-            nota = leer_datos(notas_csv)
-        alumno = leer_datos(alumnos_csv)
+def aparearArchivos(arMaestro, arNovedades, arMaeActualizado, arLogErrores):
+# Tener en cuenta que en esta funcion estamos recibiendo los archivos
+# abiertos, si no estuvieramos seguros que nos encontramos al principio
+# de los archivos, antes de hacer la primer lectura, deberíamos aplicar
+# un seek(0), a arSuc1 y arSuc2, para asegurar que procesaremos los datos
+# desde el principio al final de cada archivo
+    legajo_mae, nombre_mae, sueldo_mae = leerMaeNov(arMaestro, ",,")
+    legajo_nov, nombre_nov, sueldo_nov, tipo = leerMaeNov(arNovedades, ",,,")
+    while (legajo_mae and legajo_nov):
+        if (legajo_mae < legajo_nov):
+            # Va directo al nuevo archivo
+            grabar_MaeActualizado(arMaeActualizado, legajo_mae, nombre_mae, sueldo_mae)
+            # Vuelvo a leer Maestro
+            legajo_mae, nombre_mae, sueldo_mae = leerMaeNov(arMaestro,",,")
+        elif (legajo_mae > legajo_nov):
+            # Deberia ser un alta
+            if (tipo == 'A'): # si es alta la graba
+                grabar_MaeActualizado(arMaeActualizado, legajo_nov, nombre_nov, sueldo_nov)
+            else: # si no es alta graba en Log de Errores
+                grabar_error(arLogErrores, legajo_nov, nombre_nov, sueldo_nov, tipo)
 
-    # Cierro los archivos
-    notas_a.close()
-    alumnos_a.close()
+            # Se vuelve a leer novedades
+            legajo_nov, nombre_nov, sueldo_nov, tipo = leerMaeNov(arNovedades,",,,")
+        else: # son iguales. Deberia ser una modificacion o una baja
+            if (tipo == 'M'): # actualizo
+                grabar_MaeActualizado(arMaeActualizado, legajo_nov, nombre_nov, sueldo_nov)
+            elif (tipo == 'A'): # va al Log de Errores
+                grabar_error(arLogErrores, legajo_nov, nombre_nov, sueldo_nov, tipo)
+                # En este caso, el que estaba en el Maestro, lo dejo igual
+                grabar_MaeActualizado(arMaeActualizado,legajo_mae, nombre_mae, sueldo_mae)
+                # Si fuese una "B" (baja), no hacemos nada
+            # Leo los dos
+            legajo_mae, nombre_mae, sueldo_mae = leerMaeNov(arMaestro,",,")
+            legajo_nov, nombre_nov, sueldo_nov, tipo = leerMaeNov(arNovedades,",,,")
+    # Del while puedo estar saliendo porque encontre el final de ambos archivos
+    # o porque encontre el de solo uno. Por lo tanto, puede haber registros a
+    # a procesar y debo hacerlo
+    while legajo_mae:
+        grabar_MaeActualizado(arMaeActualizado,legajo_mae, nombre_mae, sueldo_mae)
+        legajo_mae, nombre_mae, sueldo_mae = leerMaeNov(arMaestro,",,")
+    while legajo_nov:
+        if (tipo == "A"):
+            grabar_MaeActualizado(arMaeActualizado, legajo_nov, nombre_nov, sueldo_nov)
+        else:
+            grabar_error(arLogErrores, legajo_nov, nombre_nov, sueldo_nov, tipo)
+            legajo_nov, nombre_nov, sueldo_nov, tipo = leerMaeNov(arNovedades,",,,")
 
-imprimir_notas_alumnos("alumnos.csv", "notas.csv")
+#########################################################################
+arMaestro = open("maestro.csv","r")
+arNovedades = open("novedades.csv","r")
+arMaeActualizado = open('maestro_actual.csv','w')
+arLogErrores = open('logErrores.txt','w')
+
+aparearArchivos(arMaestro, arNovedades, arMaeActualizado, arLogErrores)
+
+arMaestro.close()
+arNovedades.close()
+arMaeActualizado.close()
+arLogErrores.close()
