@@ -8,7 +8,7 @@
 # archivo Maestro devolver 3 vacios, y en el caso del archivo Novedades,
 # devolver 4 vacios
 
-def leerMaeNov(archivo,devolver):
+def leerMaeNov(archivo, devolver):
     linea = archivo.readline()
     linea = linea.rstrip('\n')
     if linea:
