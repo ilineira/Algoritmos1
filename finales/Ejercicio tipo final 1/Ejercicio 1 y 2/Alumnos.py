@@ -123,23 +123,43 @@ def ejercicio_d(diccionario):
     print("\nEjercicio d")
     lista = []
     lista2 = []
+    lista3 = []
+    lista4 = []
     for key, value in diccionario.items():
-        lista = [value[2], key, value[0], value[1]]
+        lista = [value[2], key]
         lista2.append(lista)
         lista = []
     lista2.sort()
-    for i in lista:
-        if i[0]:
-
+    for elemento in lista2:
+        nota = elemento[0]
+        for i in range((lista2.count(nota) - 1)):
+            padron = elemento[1]
+            if nota not in lista3:
+                lista3 = [nota, padron]
+            else:
+                lista3.append(padron)
+        if lista3[0] not in lista4:
+            lista4.append(lista3)
+            lista3 = []
+    for i in lista4:
+        print("Nota: {0}\n*{1}".format(i[0], i[1:len(i)]))
     return
 
 def main():
+    #value[0] = nombre
+    #value[1] = apellido
+    #value[2] = primer parcial
+    #value[3] = primer recu
+    #value[4] = segundo recu
+    #value[5] = grupo
+    #value[6] = TP1
+    #value[7] = TP2
     d = definir_diccionario()
-    imprimir_a1(d)
-    imprimir_a2(d)
-    imprimir_a3(d)
-    ejercicio_b(d)
-    ejercicio_c(d)
+    #imprimir_a1(d)
+    #imprimir_a2(d)
+    #imprimir_a3(d)
+    #ejercicio_b(d)
+    #ejercicio_c(d)
     ejercicio_d(d)
     return
 
